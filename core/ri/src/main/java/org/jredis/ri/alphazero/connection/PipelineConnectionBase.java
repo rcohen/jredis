@@ -191,12 +191,12 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
 		if(!isConnected()) 
 			throw new NotConnectedException ("Not connected!");
 		
-		PendingRequest pendingResponse = null;
+		final Request request = Assert.notNull(protocol.createRequest (cmd, args), "request object from handler", ProviderException.class);
+		final PendingRequest pendingResponse = new PendingRequest(request, cmd);
 		synchronized (serviceLock) {
 			if(pendingQuit) 
 				throw new ClientRuntimeException("Pipeline shutting down: Quit in progess; no further requests are accepted.");
 			
-			Request request = Assert.notNull(protocol.createRequest (cmd, args), "request object from handler", ProviderException.class);
 			
 			if(cmd != Command.QUIT)
 				request.write(getOutputStream());
@@ -206,7 +206,6 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
 //				heartbeat.exit();
 			}
 				
-			pendingResponse = new PendingRequest(request, cmd);
 			pendingResponseQueue.add(pendingResponse);
 		}
 		return pendingResponse;
