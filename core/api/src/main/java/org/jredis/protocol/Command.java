@@ -75,7 +75,7 @@ public enum Command {
 	RPUSHX	(RequestType.MULTI_KEY,		ResponseType.NUMBER), 
 	LPUSH		(RequestType.KEY_VALUE,		ResponseType.NUMBER),
 	LPUSHX		(RequestType.MULTI_KEY,		ResponseType.NUMBER),
-	LINSERT	(RequestType.BULK_SET,		ResponseType.NUMBER),
+	LINSERT	(RequestType.MULTI_KEY,		ResponseType.NUMBER),
 	LLEN		(RequestType.KEY,			ResponseType.NUMBER), 
 	LRANGE		(RequestType.KEY_NUM_NUM,	ResponseType.MULTI_BULK), 
 	LTRIM		(RequestType.KEY_NUM_NUM,	ResponseType.STATUS),
