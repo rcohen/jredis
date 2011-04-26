@@ -187,26 +187,32 @@ public abstract class JRedisFutureSupport implements JRedisFuture {
 		return new FutureLong(this.queueRequest(Command.RPUSH, keybytes, value));
 	}
 
-	public <K extends Object> FutureLong rpushx(K key, byte[] value) {
+	public <K extends Object> FutureLong rpushx(K key, byte[]... values) {
 		byte[] keybytes = null;
 		if ((keybytes = JRedisSupport.getKeyBytes(key)) == null)
 			throw new IllegalArgumentException ("invalid key => ["+key+"]");
 
-		if (value == null)
+		if (values == null || values.length == 0)
 			throw new IllegalArgumentException ("null value");
 
-		return new FutureLong(this.queueRequest(Command.RPUSHX, keybytes, value));
+        	byte[][] args = new byte[values.length + 1][];
+		args[0] = keybytes;
+		System.arraycopy(values, 0, args, 1, values.length);
+		return new FutureLong(this.queueRequest(Command.RPUSHX, args));
 	}
 
-	public <K extends Object> FutureLong lpushx(K key, byte[] value) {
+	public <K extends Object> FutureLong lpushx(K key, byte[]... values) {
 		byte[] keybytes = null;
 		if ((keybytes = JRedisSupport.getKeyBytes(key)) == null)
 			throw new IllegalArgumentException ("invalid key => ["+key+"]");
 
-		if (value == null)
+		if (values == null || values.length == 0)
 			throw new IllegalArgumentException ("null value");
 
-		return new FutureLong(this.queueRequest(Command.LPUSHX, keybytes, value));
+        	byte[][] args = new byte[values.length + 1][];
+		args[0] = keybytes;
+		System.arraycopy(values, 0, args, 1, values.length);
+		return new FutureLong(this.queueRequest(Command.LPUSHX, args));
 	}
 
 	public <K extends Object> FutureLong linsert(K key, boolean after, byte[] oldvalue, byte[] newvalue) {

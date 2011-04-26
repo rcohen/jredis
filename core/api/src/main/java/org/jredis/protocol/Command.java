@@ -72,9 +72,9 @@ public enum Command {
 	
 	// Commands operating on lists
 	RPUSH		(RequestType.KEY_VALUE,		ResponseType.NUMBER), 
-	RPUSHX	(RequestType.KEY_VALUE,		ResponseType.NUMBER), 
+	RPUSHX	(RequestType.MULTI_KEY,		ResponseType.NUMBER), 
 	LPUSH		(RequestType.KEY_VALUE,		ResponseType.NUMBER),
-	LPUSHX		(RequestType.KEY_VALUE,		ResponseType.NUMBER),
+	LPUSHX		(RequestType.MULTI_KEY,		ResponseType.NUMBER),
 	LINSERT	(RequestType.BULK_SET,		ResponseType.NUMBER),
 	LLEN		(RequestType.KEY,			ResponseType.NUMBER), 
 	LRANGE		(RequestType.KEY_NUM_NUM,	ResponseType.MULTI_BULK), 
