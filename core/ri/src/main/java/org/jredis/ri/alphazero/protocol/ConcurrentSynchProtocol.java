@@ -16,7 +16,10 @@
 
 package org.jredis.ri.alphazero.protocol;
 
+import java.io.ByteArrayOutputStream;
+
 import org.jredis.protocol.Command;
+import org.jredis.protocol.Request;
 import org.jredis.protocol.Response;
 
 /**
@@ -39,15 +42,14 @@ public class ConcurrentSynchProtocol extends SynchProtocol {
 	// Super Extensions
 	// ------------------------------------------------------------------------
 
-//	@Override
-//	protected ByteArrayOutputStream createRequestBufffer(Command cmd) {
-//		return new ByteArrayOutputStream (PREFERRED_REQUEST_BUFFER_SIZE);
-//	}
-//	
-//	protected Request createRequest (ByteArrayOutputStream buffer) {
-////		sharedRequestObject.reset(buffer);
-//		return new StreamBufferRequest (buffer);	
-//	}
+	@Override
+	protected ByteArrayOutputStream createRequestBufffer(Command cmd) {
+		return new ByteArrayOutputStream (PREFERRED_REQUEST_BUFFER_SIZE);
+	}
+	
+/	protected Request createRequest (ByteArrayOutputStream buffer) {
+		return new StreamBufferRequest (buffer);	
+	}
 
 	@Override
 	protected Response createStatusResponse(Command cmd) {
@@ -64,9 +66,8 @@ public class ConcurrentSynchProtocol extends SynchProtocol {
 	}
 	
 	@Override
-	protected Response createNumberResponse(Command cmd /*, boolean isBigNum*/) {
-		ValueType flavor = ValueType.NUMBER64;
-		return new SynchLineResponse (new byte[PREFERRED_LINE_BUFFER_SIZE], cmd, flavor);
+	protected Response createNumberResponse(Command cmd) {
+		return new SynchLineResponse (new byte[PREFERRED_LINE_BUFFER_SIZE], cmd, ValueType.NUMBER64);
 	}
 	
 //	SynchBulkResponse  cache_synchBulkResponse = null;

@@ -86,6 +86,8 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
 	/** counted down on notifyConnect */
 	private CountDownLatch		    connectionEstablished;
 
+  private final boolean shared;
+
 	// ------------------------------------------------------------------------
 	// Constructor(s)
 	// ------------------------------------------------------------------------
@@ -95,6 +97,7 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
 	 */
 	protected PipelineConnectionBase (ConnectionSpec spec) throws ClientRuntimeException {
 		super(spec);
+		shared = spec.getConnectionFlag(Connection.Flag.SHARED);
 	}
 	// ------------------------------------------------------------------------
 	// Extension
@@ -191,13 +194,15 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
 		if(!isConnected()) 
 			throw new NotConnectedException ("Not connected!");
 		
-		final Request request = Assert.notNull(protocol.createRequest (cmd, args), "request object from handler", ProviderException.class);
-		final PendingRequest pendingResponse = new PendingRequest(request, cmd);
+		Request request = shared ? createRequest(cmd, args) : null;
+		PendingRequest pendingResponse = shared ? new PendingRequest(request, cmd) : null;
 		synchronized (serviceLock) {
 			if(pendingQuit) 
 				throw new ClientRuntimeException("Pipeline shutting down: Quit in progess; no further requests are accepted.");
 			
-			
+                        if(request == null) {
+	                        request = createRequest(cmd, args);
+	                }
 			if(cmd != Command.QUIT)
 				request.write(getOutputStream());
 			else {
@@ -205,10 +210,15 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
 				isActive.set(false);
 //				heartbeat.exit();
 			}
-				
+                        if(pendingResponse == null) {
+                                pendingResponse = new PendingRequest(request, cmd);
+                        }
 			pendingResponseQueue.add(pendingResponse);
 		}
 		return pendingResponse;
+    }
+    private Request createRequest(Command cmd, byte[]... args) {
+            return Assert.notNull(protocol.createRequest (cmd, args), "request object from handler", ProviderException.class);
     }
 
     private void onResponseHandlerError (ClientRuntimeException cre, PendingRequest request) {
