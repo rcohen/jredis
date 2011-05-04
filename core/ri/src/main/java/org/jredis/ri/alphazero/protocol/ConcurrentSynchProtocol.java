@@ -47,7 +47,7 @@ public class ConcurrentSynchProtocol extends SynchProtocol {
 		return new ByteArrayOutputStream (PREFERRED_REQUEST_BUFFER_SIZE);
 	}
 	
-/	protected Request createRequest (ByteArrayOutputStream buffer) {
+	protected Request createRequest (ByteArrayOutputStream buffer) {
 		return new StreamBufferRequest (buffer);	
 	}
 
