@@ -58,7 +58,7 @@ public class Log {
 		  Object[] newargs = new Object[args.length + 1];
 		  System.arraycopy(args, 0, newargs, 1, args.length);
 		  newargs[0] = cat;
-		  logger.log(Level.WARNING, String.format("%s: " + msg, newargs));
+		  logger.log(Level.WARNING, "%s: " + msg, newargs);
 		}
 	}
 }
