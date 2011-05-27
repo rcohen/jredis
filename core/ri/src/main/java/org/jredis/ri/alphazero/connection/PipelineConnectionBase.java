@@ -194,17 +194,14 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
     {
 		if(!isConnected()) 
 			throw new NotConnectedException ("Not connected!");
-		
-		Protocol		protocol = Assert.notNull(getProtocolHandler(), "thread protocol handler", ProviderException.class);
-		Request 		request = Assert.notNull(protocol.createRequest (cmd, args), "request object from handler", ProviderException.class);
-//		PendingRequest 	pendingResponse = new PendingRequest(request, cmd);
-		PendingRequest 	pendingResponse = new PendingRequest(cmd);
-		
-		if(pendingQuit) 
-			throw new ClientRuntimeException("Pipeline shutting down: Quit in progess; no further requests are accepted.");
-		
+
+		PendingRequest pendingResponse = null;
 		synchronized (serviceLock) {
-			
+			if(pendingQuit) 
+				throw new ClientRuntimeException("Pipeline shutting down: Quit in progess; no further requests are accepted.");
+
+			Request request = Assert.notNull(protocol.createRequest (cmd, args), "request object from handler", ProviderException.class);
+
 			if(cmd != Command.QUIT)
 				request.write(getOutputStream());
 			else {
@@ -212,6 +209,7 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
 				isActive.set(false);
 			}
 				
+			pendingResponse = new PendingRequest(cmd);
 			pendingResponseQueue.add(pendingResponse);
 		}
 		return pendingResponse;
@@ -298,10 +296,7 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
     	 */
 //        @Override
         public void run () {
-        	/** Response handler thread specific protocol handler -- optimize fencing */
-        	Protocol protocol = Assert.notNull (newProtocolHandler(), "the delegate protocol handler", ClientRuntimeException.class);
-        	
-			Log.log("Pipeline <%s> thread for <%s> started.", Thread.currentThread().getName(), PipelineConnectionBase.this);
+		Log.log("Pipeline <%s> thread for <%s> started.", Thread.currentThread().getName(), PipelineConnectionBase.this);
         	PendingRequest pending = null;
         	while(run_flag.get()){
         		Response response = null;

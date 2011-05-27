@@ -69,15 +69,8 @@ public abstract class ConnectionBase implements Connection{
 	// Properties
 	// ------------------------------------------------------------------------
 	
-	/** Thread specific protocol handler -- optimize fencing */
-	ThreadLocal<Protocol> thrdProtocol = new ThreadLocal<Protocol>() {
-		@Override protected Protocol initialValue() {
-			return Assert.notNull (newProtocolHandler(), "the delegate protocol handler", ClientRuntimeException.class);
-		}
-	};
-	
 	/** Protocol specific matters are delegated to an instance of {@link Protocol} */
-//	private Protocol 			protocol;
+	protected Protocol 			protocol;
 
 	/** Connection specs used to create this {@link Connection} */
 	final protected ConnectionSpec  	spec;
@@ -206,6 +199,7 @@ public abstract class ConnectionBase implements Connection{
      * </pre>
      */
     protected void initializeComponents () {
+		setProtocolHandler (Assert.notNull (newProtocolHandler(), "the delegate protocol handler", ClientRuntimeException.class));
 		if(spec.getConnectionFlag(Connection.Flag.RELIABLE)){
 			Log.log("WARNING: heartbeat is disabled.");
 //	    	heartbeat = new HeartbeatJinn(this, this.spec.getHeartbeat(), " [" + this + "] heartbeat");
@@ -528,8 +522,12 @@ public abstract class ConnectionBase implements Connection{
 	// Property accessors
 	// ------------------------------------------------------------------------
 
+	final protected void setProtocolHandler(Protocol protocolHandler) {
+		this.protocol = notNull(protocolHandler, "protocolHandler for ConnectionBase", ClientRuntimeException.class);
+	}
+
 	final protected Protocol getProtocolHandler() {
-		return notNull(thrdProtocol.get(), "protocolHandler for ConnectionBase", ClientRuntimeException.class);
+		return notNull(protocol, "protocolHandler for ConnectionBase", ClientRuntimeException.class);
 	}
 
 	final protected OutputStream getOutputStream() {
