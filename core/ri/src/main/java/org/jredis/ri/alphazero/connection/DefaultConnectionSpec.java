@@ -10,6 +10,7 @@ import static org.jredis.connector.Connection.Socket.Property.SO_PREF_LATENCY;
 import static org.jredis.connector.Connection.Socket.Property.SO_RCVBUF;
 import static org.jredis.connector.Connection.Socket.Property.SO_SNDBUF;
 import static org.jredis.connector.Connection.Socket.Property.SO_TIMEOUT;
+import static org.jredis.connector.Connection.Socket.Property.SO_CONNECT_TIMEOUT;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.jredis.ClientRuntimeException;
@@ -60,6 +61,8 @@ final public class DefaultConnectionSpec extends ConnectionSpec.RefImpl {
 	private static final int DEFAULT_SND_BUFF_SIZE = 1024 * 48;
 	/** defaults to 5000 msecs */
 	static final int DEFAULT_READ_TIMEOUT_MSEC = 5000;
+	/** defaults to waiting forever */
+	static final int DEFAULT_CONNECT_TIMEOUT_MSEC = 0;
 	
 	/** defaults to 1 second (the min on Redis) */
 	static final int DEFAULT_HEARTBEAT_SEC = 1;
@@ -147,6 +150,7 @@ final public class DefaultConnectionSpec extends ConnectionSpec.RefImpl {
     	
     	// tcp socket flags
     	setSocketProperty(SO_TIMEOUT, DEFAULT_READ_TIMEOUT_MSEC);
+	setSocketProperty(SO_CONNECT_TIMEOUT, DEFAULT_CONNECT_TIMEOUT_MSEC);
     	setSocketProperty(SO_RCVBUF, DEFAULT_RCV_BUFF_SIZE);
     	setSocketProperty(SO_SNDBUF, DEFAULT_SND_BUFF_SIZE);
     	setSocketProperty(SO_PREF_BANDWIDTH, DEFAULT_SO_PREF_BANDWIDTH);

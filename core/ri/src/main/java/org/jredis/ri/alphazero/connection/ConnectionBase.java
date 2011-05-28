@@ -22,6 +22,7 @@ import static org.jredis.connector.Connection.Socket.Property.SO_PREF_LATENCY;
 import static org.jredis.connector.Connection.Socket.Property.SO_RCVBUF;
 import static org.jredis.connector.Connection.Socket.Property.SO_SNDBUF;
 import static org.jredis.connector.Connection.Socket.Property.SO_TIMEOUT;
+import static org.jredis.connector.Connection.Socket.Property.SO_CONNECT_TIMEOUT;
 import static org.jredis.ri.alphazero.support.Assert.notNull;
 import java.io.IOException;
 import java.io.InputStream;
@@ -416,8 +417,8 @@ public abstract class ConnectionBase implements Connection{
 		
 		if(socket.getReceiveBufferSize() < spec.getSocketProperty(SO_RCVBUF))
 			socket.setReceiveBufferSize(spec.getSocketProperty(SO_RCVBUF));
-		
-		socket.connect(socketAddress);
+
+		socket.connect(socketAddress, spec.getSocketProperty(SO_CONNECT_TIMEOUT));
 		
 //		Log.log("RedisConnection - socket connected to %s:%d", socketAddress.getHostName(), port);
 	}

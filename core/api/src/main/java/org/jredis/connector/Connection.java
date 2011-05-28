@@ -350,6 +350,11 @@ public interface Connection {
     		 * corresponds to SO_TIMEOUT flag.  see {@link Socket#setSoTimeout(int)} 
     		 */
     		SO_TIMEOUT,
+
+		/**
+		 * specifies a connection timeout.
+		 */
+		SO_CONNECT_TIMEOUT,
     		
     		/**
     		 * Socket performance preferences.
