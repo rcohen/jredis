@@ -17,6 +17,7 @@
 package org.jredis.ri.alphazero.connection;
 
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
@@ -352,6 +353,14 @@ public abstract class PipelineConnectionBase extends ConnectionBase {
         	}
 			Log.log("Pipeline <%s> thread for <%s> stopped.", Thread.currentThread().getName(), PipelineConnectionBase.this);
 //			Log.log("Pipeline thread <%s> stopped.", Thread.currentThread().getName());
+
+		try {
+			PipelineConnectionBase.this.disconnect();
+		} catch (IllegalStateException e) {}
+		Iterator<PendingRequest> iter = pendingResponseQueue.iterator();
+		while (iter.hasNext()) {
+			onResponseHandlerError(new ClientRuntimeException("Connection stopped"), iter.next());
+		}
         }
 
     	// ------------------------------------------------------------------------
